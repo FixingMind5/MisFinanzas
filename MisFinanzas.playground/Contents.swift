@@ -24,6 +24,10 @@ protocol debitTypes : transactions {
     var debitType: debitCategory { get }
 }
 
+protocol flujoCaja {
+    func flujoCaja(_ trans: transactionIs) -> Float
+}
+
 //=======================================================
 //ENUMS==================================================
 enum gainCategory : String {
@@ -40,6 +44,22 @@ enum debitCategory : String {
     case educacion = "Escuela"
     case necesidades = "Cuidado personal"
     case trabajo = "Trabajo"
+}
+
+enum transactionIs {
+    case gain(
+        gainName: String,
+        gainValue: Float,
+        gainDate: Date,
+        gainType: gainCategory
+    )
+    
+    case debit(
+        debitName: String,
+        debitValue: Float,
+        debitDate: Date,
+        debitType: debitCategory
+    )
 }
 
 //=======================================================
@@ -64,6 +84,8 @@ class CUENTA {
             print("Tenemos un nuevo valor", saldoCuenta)
         }
     }
+    
+    var miFlujo: [transactions] = []
     
     init(saldoCuenta: Float) {
         self.saldoCuenta = saldoCuenta
@@ -151,14 +173,43 @@ extension Date {
     }
 }
 
+extension CUENTA : flujoCaja {
+    func flujoCaja(_ trans: transactionIs) -> Float {
+        
+        switch trans {
+        case .gain(let gName, let gValue, let gDate, let gType):
+            
+            let gain = GAIN(
+                transName: gName,
+                transValue: gValue,
+                transDate: gDate,
+                gainType: gType
+            )
+            
+            miFlujo.append(gain)
+            saldoCuenta += gain.transValue
+            
+        case .debit(let dName, let dValue, let dDate, let dType):
+            
+            let debit = DEBIT(
+                transName: dName,
+                transValue: dValue,
+                transDate: dDate,
+                debitType: dType
+            )
+            
+            miFlujo.append(debit)
+            saldoCuenta -= debit.transValue
+            
+            if (saldoCuenta < 0) { print("saldo negativo") }
+        }
+        
+        return saldoCuenta
+    }
+}
+
 //=======================================================
 //SOMETHING==============================================
 var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
 
 manu.Cuenta = CUENTA(saldoCuenta: 500)
-
-let ropa = ACTIVO(
-    valorActivo: 1_000,
-    liquidez: 1,
-    productividad: true
-)
