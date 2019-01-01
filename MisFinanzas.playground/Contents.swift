@@ -25,7 +25,7 @@ protocol debitTypes : transactions {
 }
 
 protocol flujoCaja {
-    func flujoCaja(_ trans: transactionIs) -> Float
+    func flujoCaja(_ trans: transactionIs) throws -> Float
 }
 
 //=======================================================
@@ -60,6 +60,10 @@ enum transactionIs {
         debitDate: Date,
         debitType: debitCategory
     )
+}
+
+enum transactionExceptions : Error {
+    case saldoNegativo
 }
 
 //=======================================================
@@ -174,7 +178,7 @@ extension Date {
 }
 
 extension CUENTA : flujoCaja {
-    func flujoCaja(_ trans: transactionIs) -> Float {
+    func flujoCaja(_ trans: transactionIs) throws -> Float {
         
         switch trans {
         case .gain(let gName, let gValue, let gDate, let gType):
@@ -201,7 +205,10 @@ extension CUENTA : flujoCaja {
             miFlujo.append(debit)
             saldoCuenta -= debit.transValue
             
-            if (saldoCuenta < 0) { print("saldo negativo") }
+            if (saldoCuenta < 0) {
+                print("saldo negativo")
+                throw transactionExceptions.saldoNegativo
+            }
         }
         
         return saldoCuenta
