@@ -13,6 +13,7 @@ protocol addDeuda {
 protocol transactions {
     var transName: String { get set }
     var transValue: Float { get set }
+    var transDate: Date { get set }
 }
 
 protocol gainTypes : transactions {
@@ -101,11 +102,13 @@ class GAIN : gainTypes {
     var gainType: gainCategory
     var transName: String
     var transValue: Float
+    var transDate: Date
     
-    init(transName: String, transValue: Float, gainType: gainCategory) {
+    init(transName: String, transValue: Float, transDate: Date, gainType: gainCategory) {
         self.transName = transName
         self.transValue = transValue
         self.gainType = gainType
+        self.transDate = transDate
     }
 }
 
@@ -113,11 +116,13 @@ class DEBIT : debitTypes {
     var debitType: debitCategory
     var transName: String
     var transValue: Float
+    var transDate: Date
     
-    init(transName: String, transValue: Float, debitType: debitCategory) {
+    init(transName: String, transValue: Float, transDate: Date, debitType: debitCategory) {
         self.transName = transName
         self.transValue = transValue
         self.debitType = debitType
+        self.transDate = transDate
     }
 }
 
