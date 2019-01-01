@@ -1,10 +1,18 @@
+protocol addActivo {
+    func addActivo(_ activo: ACTIVO)
+}
+
+protocol addDeuda {
+    func addDeuda(_ deuda: DEUDA)
+}
+
 class PERSONA {
     var name: String
     var lastName: String
-    var Cuenta:CUENTA?
+    var Cuenta: CUENTA?
     
-    var Activos: [ACTIVO] = []
-    var Deudas: [DEUDA] = []
+    var activos: [ACTIVO] = []
+    var deudas: [DEUDA] = []
     
     init(name: String, lastName: String) {
         self.name = name
@@ -13,7 +21,11 @@ class PERSONA {
 }
 
 class CUENTA {
-    var saldoCuenta: Float
+    var saldoCuenta: Float {
+        didSet {
+            print("Tenemos un nuevo valor", saldoCuenta)
+        }
+    }
     
     init(saldoCuenta: Float) {
         self.saldoCuenta = saldoCuenta
@@ -47,3 +59,19 @@ class DEUDA {
         self.beneficio = beneficio
     }
 }
+
+extension PERSONA : addActivo {
+    func addActivo(_ activo: ACTIVO) {
+        activos.append(activo)
+    }
+}
+
+extension PERSONA : addDeuda {
+    func addDeuda(_ deuda: DEUDA) {
+        deudas.append(deuda)
+    }
+}
+
+var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
+
+manu.Cuenta = CUENTA(saldoCuenta: 500)
