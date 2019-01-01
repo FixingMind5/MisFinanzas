@@ -1,3 +1,7 @@
+import Foundation
+
+//=======================================================
+//PROTOCOLS==============================================
 protocol addActivo {
     func addActivo(_ activo: ACTIVO)
 }
@@ -19,6 +23,8 @@ protocol debitTypes : transactions {
     var debitType: debitCategory { get }
 }
 
+//=======================================================
+//ENUMS==================================================
 enum gainCategory : String {
     case salary = "Sueldo"
     case bienes = "Cosas que tenemos"
@@ -35,6 +41,8 @@ enum debitCategory : String {
     case trabajo = "Trabajo"
 }
 
+//=======================================================
+//CLASS==================================================
 class PERSONA {
     var name: String
     var lastName: String
@@ -113,6 +121,8 @@ class DEBIT : debitTypes {
     }
 }
 
+//=======================================================
+//EXTENSIONS=============================================
 extension PERSONA : addActivo {
     func addActivo(_ activo: ACTIVO) {
         activos.append(activo)
@@ -125,6 +135,19 @@ extension PERSONA : addDeuda {
     }
 }
 
+extension Date {
+    init(day: Int, month: Int, year: Int) {
+        let calendar = Calendar(identifier: .gregorian)
+        var dateComponents = DateComponents()
+        dateComponents.day = day
+        dateComponents.month = month
+        dateComponents.year = year
+        self = calendar.date(from: dateComponents) ?? Date()
+    }
+}
+
+//=======================================================
+//SOMETHING==============================================
 var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
 
 manu.Cuenta = CUENTA(saldoCuenta: 500)
