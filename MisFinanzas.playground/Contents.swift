@@ -10,6 +10,15 @@ protocol addActivo {
     func addActivo(_ activo: ACTIVO)
 }
 
+protocol allCreditCards {
+    var numberCard: UInt64 { get }
+    var cvv: Int { get }
+    var propietario: PERSONA { get }
+    var expireDate: Date { get }
+    var cutDate: Date { get }
+    var payDate: Date { get }
+}
+
 protocol addDeuda {
     func addDeuda(_ deuda: DEUDA)
 }
@@ -79,15 +88,16 @@ class PERSONA {
     var name: String
     var lastName: String
     var ingresoNeto: Float {
-        return Cuenta?.ingresos.reduce(0.0, { $0 + $1.transValue } ) ?? 0
+        return cuenta?.ingresos.reduce(0.0, { $0 + $1.transValue } ) ?? 0
     }
     var deudaConsumo: Float {
-        return Cuenta?.deudas.reduce(0.0, { $0 + $1.transValue } ) ?? 0
+        return cuenta?.deudas.reduce(0.0, { $0 + $1.transValue } ) ?? 0
     }
     var porcentajeDeuda: Float {
         return ingresoNeto / deudaConsumo
     }
-    var Cuenta: CUENTA?
+    var cuenta: CUENTA?
+    weak var tarjeta: creditCard?
     
     var activos: [ACTIVO] = []
     var deudas: [DEUDA] = []
@@ -123,6 +133,31 @@ class ACTIVO {
         self.valorActivo = valorActivo
         self.liquidez = liquidez
         self.productividad = productividad
+    }
+}
+
+class creditCard : allCreditCards {
+    var numberCard: UInt64
+    var cvv: Int
+    var propietario: PERSONA
+    var expireDate: Date
+    var cutDate: Date
+    var payDate: Date
+    
+    init(
+        numberCard: UInt64,
+        cvv: Int,
+        propietario: PERSONA,
+        expireDate: Date,
+        cutDate: Date,
+        payDate: Date
+        ) {
+        self.numberCard = numberCard
+        self.cvv = cvv
+        self.propietario = propietario
+        self.expireDate = expireDate
+        self.cutDate = cutDate
+        self.payDate = payDate
     }
 }
 
@@ -243,4 +278,4 @@ extension CUENTA : flujoCaja {
 //SOMETHING==============================================
 var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
 
-manu.Cuenta = CUENTA(saldoCuenta: 500)
+manu.cuenta = CUENTA(saldoCuenta: 500)
