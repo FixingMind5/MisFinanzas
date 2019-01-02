@@ -1,6 +1,8 @@
 import Foundation
 //=======================================================
-//PROTOCOLS==============================================
+//Typealias==============================================
+
+//typealias Endeudamiento = ( (_ valorDeudas: Float, _ valorIngreso: Float) -> Float)
 
 //=======================================================
 //PROTOCOLS==============================================
@@ -30,6 +32,9 @@ protocol flujoCaja {
     func flujoCaja(_ trans: transactionIs) throws -> Float
 }
 
+protocol extractValue {
+    func extractValue(_ trans: transactions)
+}
 //=======================================================
 //ENUMS==================================================
 enum gainCategory : String {
@@ -73,6 +78,15 @@ enum transactionExceptions : Error {
 class PERSONA {
     var name: String
     var lastName: String
+    var ingresoNeto: Float {
+        return Cuenta?.ingresos.reduce(0.0, { $0 + $1.transValue } ) ?? 0
+    }
+    var deudaConsumo: Float {
+        return Cuenta?.deudas.reduce(0.0, { $0 + $1.transValue } ) ?? 0
+    }
+    var porcentajeDeuda: Float {
+        return ingresoNeto / deudaConsumo
+    }
     var Cuenta: CUENTA?
     
     var activos: [ACTIVO] = []
@@ -91,18 +105,8 @@ class CUENTA {
         }
     }
     var miFlujo: [transactions] = []
-    var allTransactions: [transactions] = []
-    // var Endeudamiento: () -> Float = {
-    //}
-    
-    func debitFilter(category: debitCategory) -> [transactions] {
-        return miFlujo.filter({ (transaction) -> Bool in
-            guard let transaction = transaction as? DEBIT else {
-                return false
-            }
-            return transaction.debitType == category
-        })
-    }
+    var ingresos: [GAIN] = []
+    var deudas: [DEBIT] = []
     
     init(saldoCuenta: Float) {
         self.saldoCuenta = saldoCuenta
@@ -203,6 +207,7 @@ extension CUENTA : flujoCaja {
                 gainType: gType
             )
             
+            ingresos.append(gain)
             miFlujo.append(gain)
             saldoCuenta += gain.transValue
             
@@ -215,6 +220,13 @@ extension CUENTA : flujoCaja {
                 debitType: dType
             )
             
+            deudas.append(debit)
+            deudas.filter({ (transaction) -> Bool in
+                guard let transaction = transaction as? DEBIT else {
+                    return false
+                }
+                return transaction.debitType == debitCategory.ocio
+            })
             miFlujo.append(debit)
             saldoCuenta -= debit.transValue
             
@@ -227,7 +239,6 @@ extension CUENTA : flujoCaja {
         return saldoCuenta
     }
 }
-
 //=======================================================
 //SOMETHING==============================================
 var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
