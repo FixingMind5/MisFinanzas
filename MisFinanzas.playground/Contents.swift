@@ -1,4 +1,6 @@
 import Foundation
+//=======================================================
+//PROTOCOLS==============================================
 
 //=======================================================
 //PROTOCOLS==============================================
@@ -88,8 +90,19 @@ class CUENTA {
             print("Tenemos un nuevo valor", saldoCuenta)
         }
     }
-    
     var miFlujo: [transactions] = []
+    var allTransactions: [transactions] = []
+    // var Endeudamiento: () -> Float = {
+    //}
+    
+    func debitFilter(category: debitCategory) -> [transactions] {
+        return miFlujo.filter({ (transaction) -> Bool in
+            guard let transaction = transaction as? DEBIT else {
+                return false
+            }
+            return transaction.debitType == category
+        })
+    }
     
     init(saldoCuenta: Float) {
         self.saldoCuenta = saldoCuenta
