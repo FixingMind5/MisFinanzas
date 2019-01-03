@@ -10,6 +10,11 @@ protocol addActivo {
     func addActivo(_ activo: ACTIVO)
 }
 
+protocol miAhorro {
+    var valorAhorro: Float { get set }
+    var nombreAhorro: String { get set }
+}
+
 protocol allCreditCards {
     var numberCard: UInt64 { get }
     var cvv: Int { get }
@@ -44,6 +49,7 @@ protocol flujoCaja {
 protocol extractValue {
     func extractValue(_ trans: transactions)
 }
+
 //=======================================================
 //ENUMS==================================================
 enum gainCategory : String {
@@ -93,14 +99,26 @@ class PERSONA {
     var deudaConsumo: Float {
         return cuenta?.deudas.reduce(0.0, { $0 + $1.transValue } ) ?? 0
     }
+    var totalAhorro: Float {
+        return ahorros.reduce(0.0, { $0 + $1.valorAhorro })
+    }
+    
     var porcentajeDeuda: Float {
         return ingresoNeto / deudaConsumo
     }
+    var porcentajeAhorro: Float {
+        return totalAhorro / ingresoNeto
+    }
+    var mesesRiesgo: Float {
+        return totalAhorro / cuenta!.deudas.reduce(0.0, { $0 + $1.transValue })
+    }
+    
     var cuenta: CUENTA?
     weak var tarjeta: creditCard?
     
     var activos: [ACTIVO] = []
-    var deudas: [DEUDA] = []
+    var misDeudas: [DEUDA] = []
+    var ahorros: [AHORRO] = []
     
     init(name: String, lastName: String) {
         self.name = name
@@ -136,31 +154,6 @@ class ACTIVO {
     }
 }
 
-class creditCard : allCreditCards {
-    var numberCard: UInt64
-    var cvv: Int
-    var propietario: PERSONA
-    var expireDate: Date
-    var cutDate: Date
-    var payDate: Date
-    
-    init(
-        numberCard: UInt64,
-        cvv: Int,
-        propietario: PERSONA,
-        expireDate: Date,
-        cutDate: Date,
-        payDate: Date
-        ) {
-        self.numberCard = numberCard
-        self.cvv = cvv
-        self.propietario = propietario
-        self.expireDate = expireDate
-        self.cutDate = cutDate
-        self.payDate = payDate
-    }
-}
-
 class DEUDA {
     var saldoDeuda: Float
     var cuota: Float
@@ -173,6 +166,16 @@ class DEUDA {
         self.cuota = cuota
         self.tasa = tasa
         self.beneficio = beneficio
+    }
+}
+
+class AHORRO : miAhorro {
+    var valorAhorro: Float
+    var nombreAhorro: String
+    
+    init(valorAhorro: Float, nombreAhorro: String) {
+        self.valorAhorro = valorAhorro
+        self.nombreAhorro = nombreAhorro
     }
 }
 
@@ -204,6 +207,31 @@ class DEBIT : debitTypes {
     }
 }
 
+class creditCard : allCreditCards {
+    var numberCard: UInt64
+    var cvv: Int
+    var propietario: PERSONA
+    var expireDate: Date
+    var cutDate: Date
+    var payDate: Date
+    
+    init(
+        numberCard: UInt64,
+        cvv: Int,
+        propietario: PERSONA,
+        expireDate: Date,
+        cutDate: Date,
+        payDate: Date
+        ) {
+        self.numberCard = numberCard
+        self.cvv = cvv
+        self.propietario = propietario
+        self.expireDate = expireDate
+        self.cutDate = cutDate
+        self.payDate = payDate
+    }
+}
+
 //=======================================================
 //EXTENSIONS=============================================
 extension PERSONA : addActivo {
@@ -214,7 +242,7 @@ extension PERSONA : addActivo {
 
 extension PERSONA : addDeuda {
     func addDeuda(_ deuda: DEUDA) {
-        deudas.append(deuda)
+        misDeudas.append(deuda)
     }
 }
 
@@ -274,6 +302,7 @@ extension CUENTA : flujoCaja {
         return saldoCuenta
     }
 }
+
 //=======================================================
 //SOMETHING==============================================
 var manu = PERSONA(name: "Manuel", lastName: "Aguilar")
