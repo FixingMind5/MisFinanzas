@@ -1,6 +1,5 @@
 import Foundation
 
-<<<<<<< Updated upstream
 public protocol addActivo {
     func addActivo(_ activo: ACTIVO)
 }

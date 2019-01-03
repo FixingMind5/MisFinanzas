@@ -1,6 +1,5 @@
 import Foundation
 
-<<<<<<< Updated upstream
 public extension Date {
     public init(day: Int, month: Int, year: Int) {
         let calendar = Calendar(identifier: .gregorian)
@@ -11,5 +10,4 @@ public extension Date {
         self = calendar.date(from: dateComponents) ?? Date()
     }
 }
-=======
->>>>>>> Stashed changes
+
