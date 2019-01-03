@@ -65,5 +65,3 @@ extension PERSONA : addAhorro {
         ahorros.append(ahorro)
     }
 }
-=======
->>>>>>> Stashed changes
