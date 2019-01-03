@@ -15,6 +15,10 @@ protocol miAhorro {
     var nombreAhorro: String { get set }
 }
 
+protocol addAhorro {
+    func addAhorro(ahorro: AHORRO)
+}
+
 protocol allCreditCards {
     var numberCard: UInt64 { get }
     var cvv: Int { get }
@@ -300,6 +304,12 @@ extension CUENTA : flujoCaja {
         }
         
         return saldoCuenta
+    }
+}
+
+extension PERSONA : addAhorro {
+    func addAhorro(ahorro: AHORRO) {
+        ahorros.append(ahorro)
     }
 }
 
