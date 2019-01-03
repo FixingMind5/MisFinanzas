@@ -2,7 +2,7 @@ import Foundation
 //=======================================================
 //Typealias==============================================
 
-//typealias Endeudamiento = ( (_ valorDeudas: Float, _ valorIngreso: Float) -> Float)
+typealias transactionHandler = ( (_ completed: Bool, _ confirmation: Date) -> Void)
 
 //=======================================================
 //PROTOCOLS==============================================
@@ -36,6 +36,8 @@ protocol transactions {
     var transName: String { get set }
     var transValue: Float { get set }
     var transDate: Date { get set }
+    var transValid: Bool { get }
+    var transHandler: transactionHandler? { get }
 }
 
 protocol gainTypes : transactions {
@@ -77,6 +79,7 @@ enum transactionIs {
         gainName: String,
         gainValue: Float,
         gainDate: Date,
+        gainValid: Bool,
         gainType: gainCategory
     )
     
@@ -84,6 +87,7 @@ enum transactionIs {
         debitName: String,
         debitValue: Float,
         debitDate: Date,
+        debitValid: Bool,
         debitType: debitCategory
     )
 }
@@ -188,12 +192,25 @@ class GAIN : gainTypes {
     var transName: String
     var transValue: Float
     var transDate: Date
+    var transValid: Bool
+    var transHandler: transactionHandler?
     
-    init(transName: String, transValue: Float, transDate: Date, gainType: gainCategory) {
+    init(
+        transName: String,
+        transValue: Float,
+        transDate: Date,
+        transValid: Bool,
+        gainType: gainCategory
+        ) {
         self.transName = transName
         self.transValue = transValue
         self.gainType = gainType
         self.transDate = transDate
+        self.transValid = transValid
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.transHandler?(true, Date())
+        }
     }
 }
 
@@ -202,12 +219,24 @@ class DEBIT : debitTypes {
     var transName: String
     var transValue: Float
     var transDate: Date
+    var transValid: Bool
+    var transHandler: transactionHandler?
     
-    init(transName: String, transValue: Float, transDate: Date, debitType: debitCategory) {
+    init(transName: String,
+         transValue: Float,
+         transDate: Date,
+         transValid: Bool,
+         debitType: debitCategory
+        ) {
         self.transName = transName
         self.transValue = transValue
         self.debitType = debitType
         self.transDate = transDate
+        self.transValid = transValid
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.transHandler?(true, Date())
+        }
     }
 }
 
@@ -265,37 +294,47 @@ extension CUENTA : flujoCaja {
     func flujoCaja(_ trans: transactionIs) throws -> Float {
         
         switch trans {
-        case .gain(let gName, let gValue, let gDate, let gType):
+        case .gain(let gName, let gValue, let gDate, let gValid, let gType):
             
             let gain = GAIN(
                 transName: gName,
                 transValue: gValue,
                 transDate: gDate,
+                transValid: gValid,
                 gainType: gType
             )
             
-            ingresos.append(gain)
-            miFlujo.append(gain)
-            saldoCuenta += gain.transValue
+            gain.transHandler = { (completed, confirmation) in
+                gain.transDate = confirmation
+                self.ingresos.append(gain)
+                self.miFlujo.append(gain)
+                self.saldoCuenta += gain.transValue
+            }
+
             
-        case .debit(let dName, let dValue, let dDate, let dType):
+        case .debit(let dName, let dValue, let dDate, let dValid, let dType):
             
             let debit = DEBIT(
                 transName: dName,
                 transValue: dValue,
                 transDate: dDate,
+                transValid: dValid,
                 debitType: dType
             )
             
-            deudas.append(debit)
-            deudas.filter({ (transaction) -> Bool in
-                guard let transaction = transaction as? DEBIT else {
-                    return false
-                }
-                return transaction.debitType == debitCategory.ocio
-            })
-            miFlujo.append(debit)
-            saldoCuenta -= debit.transValue
+            debit.transHandler = { (completed, confirmation) in
+                debit.transDate = confirmation
+                self.deudas.append(debit)
+                self.deudas.filter({ (transaction) -> Bool in
+                    guard let transaction = transaction as? DEBIT else {
+                        return false
+                    }
+                    return transaction.debitType == debitCategory.ocio
+                })
+                self.miFlujo.append(debit)
+                self.saldoCuenta -= debit.transValue
+            }
+            
             
             if (saldoCuenta < 0) {
                 print("saldo negativo")
