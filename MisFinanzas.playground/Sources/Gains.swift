@@ -1,5 +1,6 @@
 import Foundation
 
+<<<<<<< Updated upstream
 public protocol gainTypes : transactions {
     var gainType: gainCategory { get }
 }
@@ -36,3 +37,5 @@ public class GAIN : gainTypes {
         }
     }
 }
+=======
+>>>>>>> Stashed changes

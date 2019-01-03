@@ -1,5 +1,6 @@
 import Foundation
 
+<<<<<<< Updated upstream
 public protocol allCreditCards {
    var numberCard: UInt64 { get }
    var cvv: Int { get }
@@ -33,3 +34,5 @@ public class creditCard : allCreditCards {
         self.payDate = payDate
     }
 }
+=======
+>>>>>>> Stashed changes

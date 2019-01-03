@@ -1,5 +1,6 @@
 import Foundation
 
+<<<<<<< Updated upstream
 public protocol transactions {
     var transName: String { get set }
     var transValue: Float { get set }
@@ -29,3 +30,5 @@ public enum transactionIs {
 public enum transactionExceptions : Error {
     case saldoNegativo
 }
+=======
+>>>>>>> Stashed changes

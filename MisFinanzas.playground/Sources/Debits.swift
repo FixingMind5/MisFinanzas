@@ -1,5 +1,6 @@
 import Foundation
 
+<<<<<<< Updated upstream
 public protocol debitTypes : transactions {
     var debitType: debitCategory { get }
 }
@@ -39,3 +40,5 @@ public class DEBIT : debitTypes {
         }
     }
 }
+=======
+>>>>>>> Stashed changes

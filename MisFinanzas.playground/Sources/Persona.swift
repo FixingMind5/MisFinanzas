@@ -1,5 +1,6 @@
 import Foundation
 
+<<<<<<< Updated upstream
 public protocol addActivo {
     func addActivo(_ activo: ACTIVO)
 }
@@ -65,3 +66,5 @@ extension PERSONA : addAhorro {
         ahorros.append(ahorro)
     }
 }
+=======
+>>>>>>> Stashed changes
