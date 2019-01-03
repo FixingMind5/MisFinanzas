@@ -1,7 +1,7 @@
-##¿Cuál es el problema?
+## ¿Cuál es el problema?
 Favor de ser lo más detallado posible
 
-##¿En qué versión ocurre?
+## ¿En qué versión ocurre?
 
-##¿Cómo puedo replicar el problema?
+## ¿Cómo puedo replicar el problema?
 Dime, paso a paso, cómo conseguiste llegar a él
